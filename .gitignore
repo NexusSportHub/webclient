@@ -34,3 +34,5 @@ build/
 
 
 pom.xml
+application.properties
+
