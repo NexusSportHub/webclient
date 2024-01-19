@@ -1,0 +1,5 @@
+# Created at 2023-12-26T11:24:38.273
+Boot Manifest-JAR contains absolute paths in classpath 'D:\noelia\DWES Vedruna\NexusSportHub\target\test-classes'
+Hint: <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
+'other' has different root
+
