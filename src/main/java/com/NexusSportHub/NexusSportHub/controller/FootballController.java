@@ -26,8 +26,8 @@ public class FootballController {
     }
 
     @GetMapping("/football/leagues")
-    public Mono<String> getFootballLeagues() {
-        return footballApiService.getFootballLeagues();
+    public Mono<Object> getFootballLeagues(HttpServletRequest request) {
+        return footballApiService.getFootballLeagues(request);
     }
 
     @GetMapping("/basketball/leagues")
@@ -36,13 +36,13 @@ public class FootballController {
     }
 
     @GetMapping("baseball/leagues")
-    public Mono<String> getbaseballcompetitions() {
-        return footballApiService.getBaseballLeagues();
+    public Mono<Object> getbaseballcompetitions(HttpServletRequest request) {
+        return footballApiService.getBaseballLeagues(request);
     }
 
     @GetMapping("rugby/leagues")
-    public Mono<String> getrugbyleagues() {
-        return footballApiService.getRugbyLeagues();
+    public Mono<Object> getrugbyleagues(HttpServletRequest request) {
+        return footballApiService.getRugbyLeagues(request);
     }
 
     

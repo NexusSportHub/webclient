@@ -8,10 +8,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import jakarta.servlet.http.HttpServletRequest;
 import reactor.core.publisher.Mono;
 import org.springframework.core.io.buffer.DataBuffer;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.stream.Collectors;
@@ -58,24 +62,33 @@ public class FootballApiService {
     }
 
     // Decodificamos el token JWT del proyecto react
-    public Mono<String> getAllClaims(HttpServletRequest request) {
-        String token = request.getHeader(HttpHeaders.AUTHORIZATION);
-    
-        if (token != null && token.startsWith("Bearer ")) {
-            token = token.substring(7);
-    
-            Base64.Decoder decoder = Base64.getDecoder();
-            String[] array = token.split("\\.");
-    
-            if (array.length >= 2) {
-                return Mono.just(new String(decoder.decode(array[1]), StandardCharsets.UTF_8));
-            } else {
-                return Mono.error(new RuntimeException("Token JWT no tiene el formato esperado"));
+   public Mono<String> getJwtId(HttpServletRequest request) {
+    String token = request.getHeader(HttpHeaders.AUTHORIZATION);
+
+    if (token != null && token.startsWith("Bearer ")) {
+        token = token.substring(7);
+
+        Base64.Decoder decoder = Base64.getDecoder();
+        String[] array = token.split("\\.");
+
+        if (array.length >= 2) {
+            String decodedJson = new String(decoder.decode(array[1]), StandardCharsets.UTF_8);
+            try {
+                // Parsear el JSON y extraer el campo "sub" (ID)
+                JsonNode jsonNode = new ObjectMapper().readTree(decodedJson);
+                String jwtId = jsonNode.get("sub").asText();
+                return Mono.just(jwtId);
+            } catch (IOException e) {
+                return Mono.error(new RuntimeException("Error al parsear el token JWT"));
             }
         } else {
-            return Mono.error(new RuntimeException("No se encontró el token en el encabezado"));
+            return Mono.error(new RuntimeException("Token JWT no tiene el formato esperado"));
         }
+    } else {
+        return Mono.error(new RuntimeException("No se encontró el token en el encabezado"));
     }
+}
+
 
     // La información a mostrar por pantalla es muy grande y no hay memoria
     // suficiente para mostrarlo
@@ -93,7 +106,7 @@ public class FootballApiService {
                     DataBufferUtils.release(dataBuffer);
     
                     // Decodificar el token JWT y obtener información
-                    Mono<String> decodedTokenInfoMono = getAllClaims(request);
+                    Mono<String> decodedTokenInfoMono = getJwtId(request);
     
                     // Utilizar flatMap para combinar la información del token con la respuesta
                     return decodedTokenInfoMono.flatMap(decodedTokenInfo -> {
@@ -107,7 +120,7 @@ public class FootballApiService {
                 .map(responseEntities -> responseEntities.get(0));
     }
 
-    public Mono<String> getFootballLeagues() {
+    public Mono<Object> getFootballLeagues(HttpServletRequest request) {
         return footballWebClient.get()
                 .uri("/leagues")
                 .header("x-apisports-key", footballApiSportsKey)
@@ -117,12 +130,23 @@ public class FootballApiService {
                     byte[] bytes = new byte[dataBuffer.readableByteCount()];
                     dataBuffer.read(bytes);
                     DataBufferUtils.release(dataBuffer);
-                    return new String(bytes, StandardCharsets.UTF_8);
+
+                    // Decodificar el token JWT y obtener información
+                    Mono<String> decodedTokenInfoMono = getJwtId(request);
+    
+                    // Utilizar flatMap para combinar la información del token con la respuesta
+                    return decodedTokenInfoMono.flatMap(decodedTokenInfo -> {
+                        String responseBody = new String(bytes, StandardCharsets.UTF_8);
+                        return Mono.just(ResponseEntity.ok()
+                                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                                .body(responseBody + "\n\n" + decodedTokenInfo));
+                    });
                 })
-                .collect(Collectors.joining(""));
+                .collectList()
+                .map(responseEntities -> responseEntities.get(0));
     }
 
-    public Mono<String> getBaseballLeagues() {
+    public Mono<Object> getBaseballLeagues(HttpServletRequest request) {
         return baseballWebClient.get()
                 .uri("/leagues")
                 .header("x-apisports-key", baseballApiSportsKey)
@@ -132,12 +156,22 @@ public class FootballApiService {
                     byte[] bytes = new byte[dataBuffer.readableByteCount()];
                     dataBuffer.read(bytes);
                     DataBufferUtils.release(dataBuffer);
-                    return new String(bytes, StandardCharsets.UTF_8);
+                    // Decodificar el token JWT y obtener información
+                    Mono<String> decodedTokenInfoMono = getJwtId(request);
+    
+                    // Utilizar flatMap para combinar la información del token con la respuesta
+                    return decodedTokenInfoMono.flatMap(decodedTokenInfo -> {
+                        String responseBody = new String(bytes, StandardCharsets.UTF_8);
+                        return Mono.just(ResponseEntity.ok()
+                                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                                .body(responseBody + "\n\n" + decodedTokenInfo));
+                    });
                 })
-                .collect(Collectors.joining(""));
+                .collectList()
+                .map(responseEntities -> responseEntities.get(0));
     }
 
-    public Mono<String> getRugbyLeagues() {
+    public Mono<Object> getRugbyLeagues(HttpServletRequest request) {
         return rugbyWebClient.get()
                 .uri("/leagues")
                 .header("x-apisports-key", rugbyApiSportsKey)
@@ -147,8 +181,18 @@ public class FootballApiService {
                     byte[] bytes = new byte[dataBuffer.readableByteCount()];
                     dataBuffer.read(bytes);
                     DataBufferUtils.release(dataBuffer);
-                    return new String(bytes, StandardCharsets.UTF_8);
+                    // Decodificar el token JWT y obtener información
+                    Mono<String> decodedTokenInfoMono = getJwtId(request);
+    
+                    // Utilizar flatMap para combinar la información del token con la respuesta
+                    return decodedTokenInfoMono.flatMap(decodedTokenInfo -> {
+                        String responseBody = new String(bytes, StandardCharsets.UTF_8);
+                        return Mono.just(ResponseEntity.ok()
+                                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                                .body(responseBody + "\n\n" + decodedTokenInfo));
+                    });
                 })
-                .collect(Collectors.joining(""));
+                .collectList()
+                .map(responseEntities -> responseEntities.get(0));
     }
 }
