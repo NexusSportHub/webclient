@@ -2,13 +2,13 @@ package com.NexusSportHub.NexusSportHub.services;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.buffer.DataBufferUtils;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,8 +19,12 @@ import org.springframework.core.io.buffer.DataBuffer;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.sql.Date;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
+
 
 @Service
 public class FootballApiService {
@@ -110,13 +114,6 @@ public class FootballApiService {
                     // Utilizar flatMap para combinar la información del token con la respuesta
                     return decodedTokenInfoMono.flatMap(decodedTokenInfo -> {
                         String responseBody = new String(bytes, StandardCharsets.UTF_8);
-
-                        // Construir el objeto que se enviará al proyecto externo
-                        MyDataObject myDataObject = new MyDataObject(responseBody, decodedTokenInfo);
-
-                        // Enviar los datos al proyecto externo
-                        sendToExternalProject(myDataObject);
-
                         return Mono.just(ResponseEntity.ok()
                                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                                 .body(responseBody + "\n\n" + decodedTokenInfo));
@@ -124,54 +121,6 @@ public class FootballApiService {
                 })
                 .collectList()
                 .map(responseEntities -> responseEntities.get(0));
-    }
-
-    // Método para enviar los datos al proyecto externo
-    private void sendToExternalProject(MyDataObject myDataObject) {
-        String externalProjectUrl = "http://localhost:8082/api/products/insert"; // Cambia esto con la URL correcta del
-                                                                                 // proyecto externo
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        // Configurar el cliente HTTP
-        RestTemplate restTemplate = new RestTemplate();
-
-        // Configurar la entidad HTTP con los datos a enviar
-        HttpEntity<MyDataObject> requestEntity = new HttpEntity<>(myDataObject, headers);
-
-        // Realizar la solicitud POST al proyecto externo
-        restTemplate.postForObject(externalProjectUrl, requestEntity, Void.class);
-    }
-
-    // Clase para representar los datos que se enviarán al proyecto externo
-    public class MyDataObject {
-        private String responseBody;
-        private String decodedTokenInfo;
-
-        public MyDataObject(String responseBody, String decodedTokenInfo) {
-            this.responseBody = responseBody;
-            this.decodedTokenInfo = decodedTokenInfo;
-        }
-
-         // Constructor sin argumentos necesario para la deserialización
-    public MyDataObject() {
-    }
-
-    public String getResponseBody() {
-        return responseBody;
-    }
-
-    public void setResponseBody(String responseBody) {
-        this.responseBody = responseBody;
-    }
-
-    public String getDecodedTokenInfo() {
-        return decodedTokenInfo;
-    }
-
-    public void setDecodedTokenInfo(String decodedTokenInfo) {
-        this.decodedTokenInfo = decodedTokenInfo;
-    }
     }
 
     public Mono<Object> getFootballLeagues(HttpServletRequest request) {
@@ -226,27 +175,65 @@ public class FootballApiService {
     }
 
     public Mono<Object> getRugbyLeagues(HttpServletRequest request) {
+        WebClient externalWebClient = WebClient.create("http://localhost:8082/api/products"); // Reemplaza con la URL real del proyecto externo
+    
+        // Hacer la solicitud GET a la API de rugby
         return rugbyWebClient.get()
                 .uri("/leagues")
                 .header("x-apisports-key", rugbyApiSportsKey)
                 .retrieve()
                 .bodyToFlux(DataBuffer.class)
-                .map(dataBuffer -> {
+                .flatMap(dataBuffer -> {
                     byte[] bytes = new byte[dataBuffer.readableByteCount()];
                     dataBuffer.read(bytes);
                     DataBufferUtils.release(dataBuffer);
+    
                     // Decodificar el token JWT y obtener información
                     Mono<String> decodedTokenInfoMono = getJwtId(request);
-
+    
                     // Utilizar flatMap para combinar la información del token con la respuesta
                     return decodedTokenInfoMono.flatMap(decodedTokenInfo -> {
                         String responseBody = new String(bytes, StandardCharsets.UTF_8);
-                        return Mono.just(ResponseEntity.ok()
-                                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                                .body(responseBody + "\n\n" + decodedTokenInfo));
+    
+                        // Loguear información de la consulta
+                        System.out.println("Response from rugby API: " + responseBody);
+                        System.out.println("Decoded Token Info: " + decodedTokenInfo);
+    
+                        // Crear objeto DataModel con los datos de la solicitud POST
+                        DataModel data = new DataModel();
+                        data.setUserId(decodedTokenInfo); // Puedes cambiar esto según tus necesidades
+                        data.setApiUrl("https://v1.rugby.api-sports.io");
+                        data.setPath("/path/to/resource");
+                        data.setStatus("success");
+                        data.setDate(new Date(0));
+                        data.setPaidDate(new Date(0));
+    
+                        // Realizar la solicitud POST a la API externa utilizando WebClient
+                        return externalWebClient.post()
+                                .uri("/insert")
+                                .body(BodyInserters.fromValue(data))
+                                .retrieve()
+                                .bodyToMono(String.class)
+                                .flatMap(response -> {
+                                    // Loguear la respuesta de la API externa si es necesario
+                                    System.out.println("Response from external API: " + response);
+    
+                                    // Puedes retornar la respuesta de la API externa si es relevante
+                                    return Mono.just(ResponseEntity.ok()
+                                            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                                            .body(responseBody + "\n\n" + decodedTokenInfo));
+                                })
+                                .onErrorResume(e -> {
+                                    // Manejar el error según sea necesario
+                                    e.printStackTrace(); // Loguear el error
+                                    return Mono.empty();
+                                });
                     });
                 })
                 .collectList()
                 .map(responseEntities -> responseEntities.get(0));
     }
+    
+    
+
 }
