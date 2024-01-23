@@ -4,17 +4,21 @@ package com.NexusSportHub.NexusSportHub.services;
 
     import java.util.Date;
 
-public class DataModel {
+public class Product {
 
+   
     private String userId;
     private String apiUrl;
     private String path;
-    private String status;
+    private Boolean status;
     private Date date;
     private Date paidDate;
 
-    // Constructor vacío (puedes tener otros constructores según tus necesidades)
-    public DataModel() {
+    
+
+     // Constructor
+     public Product() {
+       
     }
 
     // Getters y Setters
@@ -43,11 +47,11 @@ public class DataModel {
         this.path = path;
     }
 
-    public String getStatus() {
+    public Boolean getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Boolean status) {
         this.status = status;
     }
 

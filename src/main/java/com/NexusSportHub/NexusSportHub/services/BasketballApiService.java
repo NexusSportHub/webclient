@@ -1,6 +1,13 @@
 package com.NexusSportHub.NexusSportHub.services;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.sql.Date;
+import java.time.Instant;
+import java.util.Base64;
+
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -14,30 +21,20 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpServletRequest;
 import reactor.core.publisher.Mono;
-import org.springframework.core.io.buffer.DataBuffer;
-
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.sql.Date;
-import java.util.Base64;
-
-import java.time.Instant;
 
 @Service
-public class FootballApiService {
+public class BasketballApiService {
 
-    private final WebClient footballWebClient;
+    private final WebClient basketballWebClient;
 
-    @Value("${football.api-sports.key}")
-    private String footballApiSportsKey;
+    @Value("${basketball.api-sports.key}")
+    private String basketballApiSportsKey;
 
-    public FootballApiService(WebClient.Builder webClientBuilder) {
-
-        this.footballWebClient = webClientBuilder
-                .baseUrl("https://v3.football.api-sports.io/")
-                .defaultHeader("x-apisports-key", footballApiSportsKey)
+    public BasketballApiService(WebClient.Builder webClientBuilder) {
+        this.basketballWebClient = webClientBuilder
+                .baseUrl("https://v1.basketball.api-sports.io/")
+                .defaultHeader("x-apisports-key", basketballApiSportsKey)
                 .build();
-
     }
 
     // Decodificamos el token JWT del proyecto react
@@ -68,11 +65,15 @@ public class FootballApiService {
         }
     }
 
-    public Mono<Object> getFootballLeagues(HttpServletRequest request) {
+    // La información a mostrar por pantalla es muy grande y no hay memoria
+    // suficiente para mostrarlo
+    // se hace la línea de map, pasa el tipo de dato a uno más pequeño
+    // para así poder mostrarlo por pantalla
+    public Mono<Object> getBasketballLeagues(HttpServletRequest request) {
         WebClient externalWebClient = WebClient.create("http://localhost:8082/api/products");
-        return footballWebClient.get()
+        return basketballWebClient.get()
                 .uri("/leagues")
-                .header("x-apisports-key", footballApiSportsKey)
+                .header("x-apisports-key", basketballApiSportsKey)
                 .retrieve()
                 .bodyToFlux(DataBuffer.class)
                 .map(dataBuffer -> {
@@ -89,8 +90,8 @@ public class FootballApiService {
                         // Crear objeto DataModel con los datos de la solicitud POST
                         Product product = new Product();
                         product.setUserId(decodedTokenInfo);
-                        product.setApiUrl("https://v3.football.api-sports.io/");
-                        product.setPath("v3");
+                        product.setApiUrl("https://v1.basketball.api-sports.io/");
+                        product.setPath("v1");
                         product.setStatus(false);
                         product.setDate(Date.from(Instant.now()));
                         product.setPaidDate(new Date(0));
@@ -124,4 +125,6 @@ public class FootballApiService {
                 .map(responseEntities -> responseEntities.isEmpty() ? "Sin datos" : responseEntities.get(0));
     }
 
+
+    
 }
