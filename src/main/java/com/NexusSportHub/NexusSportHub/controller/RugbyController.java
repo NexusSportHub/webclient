@@ -5,27 +5,30 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.NexusSportHub.NexusSportHub.services.FootballApiService;
+import com.NexusSportHub.NexusSportHub.services.RugbyApiService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "http://localhost:5173") // Permitimos el acceso al puerto donde se ejecuta el proyecto react
-public class FootballController {
+@CrossOrigin(origins = "http://localhost:5173") //Permitimos el acceso al puerto donde se ejecuta el proyecto react
+public class RugbyController {
 
-    private final FootballApiService footballApiService;
+    private final RugbyApiService rugbyApiService;
 
     @Autowired
-    public FootballController(FootballApiService footballApiService) {
-        this.footballApiService = footballApiService;
+    public RugbyController(RugbyApiService rugbyApiService) {
+
+        this.rugbyApiService = rugbyApiService;
 
     }
 
-    @GetMapping("/football/leagues")
-    public Mono<Object> getFootballLeagues(HttpServletRequest request) {
-        return footballApiService.getFootballLeagues(request);
+    @GetMapping("rugby/leagues")
+    public Mono<Object> getrugbyleagues(HttpServletRequest request) {
+        return rugbyApiService.getRugbyLeagues(request);
     }
-
+    
 }

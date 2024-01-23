@@ -1,6 +1,13 @@
 package com.NexusSportHub.NexusSportHub.services;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.sql.Date;
+import java.time.Instant;
+import java.util.Base64;
+
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -14,30 +21,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpServletRequest;
 import reactor.core.publisher.Mono;
-import org.springframework.core.io.buffer.DataBuffer;
-
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.sql.Date;
-import java.util.Base64;
-
-import java.time.Instant;
 
 @Service
-public class FootballApiService {
+public class BaseballApiService {
+    
+    private final WebClient baseballWebClient;
 
-    private final WebClient footballWebClient;
+    @Value("${baseball.api-sports.key}")
+    private String baseballApiSportsKey;
 
-    @Value("${football.api-sports.key}")
-    private String footballApiSportsKey;
+    public BaseballApiService (WebClient.Builder webClientBuilder) {
 
-    public FootballApiService(WebClient.Builder webClientBuilder) {
-
-        this.footballWebClient = webClientBuilder
-                .baseUrl("https://v3.football.api-sports.io/")
-                .defaultHeader("x-apisports-key", footballApiSportsKey)
+        this.baseballWebClient = webClientBuilder
+                .baseUrl("https://v1.baseball.api-sports.io")
+                .defaultHeader("x-apisports-key", baseballApiSportsKey)
                 .build();
-
     }
 
     // Decodificamos el token JWT del proyecto react
@@ -68,11 +66,11 @@ public class FootballApiService {
         }
     }
 
-    public Mono<Object> getFootballLeagues(HttpServletRequest request) {
+    public Mono<Object> getBaseballLeagues(HttpServletRequest request) {
         WebClient externalWebClient = WebClient.create("http://localhost:8082/api/products");
-        return footballWebClient.get()
+        return baseballWebClient.get()
                 .uri("/leagues")
-                .header("x-apisports-key", footballApiSportsKey)
+                .header("x-apisports-key", baseballApiSportsKey)
                 .retrieve()
                 .bodyToFlux(DataBuffer.class)
                 .map(dataBuffer -> {
@@ -89,8 +87,8 @@ public class FootballApiService {
                         // Crear objeto DataModel con los datos de la solicitud POST
                         Product product = new Product();
                         product.setUserId(decodedTokenInfo);
-                        product.setApiUrl("https://v3.football.api-sports.io/");
-                        product.setPath("v3");
+                        product.setApiUrl("https://v1.baseball.api-sports.io");
+                        product.setPath("v1");
                         product.setStatus(false);
                         product.setDate(Date.from(Instant.now()));
                         product.setPaidDate(new Date(0));
