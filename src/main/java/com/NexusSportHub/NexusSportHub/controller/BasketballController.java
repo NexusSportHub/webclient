@@ -30,5 +30,15 @@ public class BasketballController {
     public Mono<Object> getBasketballLeagues(HttpServletRequest request) {
         return basketballApiService.getBasketballLeagues(request);
     }
+
+    @GetMapping("/basketball/seasons")
+    public Mono<Object> getBasketballSeasons(HttpServletRequest request) {
+        return basketballApiService.getBasketballSeasons(request);
+    }
+
+    @GetMapping("/basketball/countries")
+    public Mono<Object> getBasketballCountries(HttpServletRequest request) {
+        return basketballApiService.getBasketballCountries(request);
+    }
     
 }

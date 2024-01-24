@@ -30,5 +30,15 @@ public class RugbyController {
     public Mono<Object> getrugbyleagues(HttpServletRequest request) {
         return rugbyApiService.getRugbyLeagues(request);
     }
+
+    @GetMapping("rugby/seasons")
+    public Mono<Object> getrugbyseasons(HttpServletRequest request) {
+        return rugbyApiService.getRugbySeasons(request);
+    }
+
+    @GetMapping("rugby/countries")
+    public Mono<Object> getrugbycountries(HttpServletRequest request) {
+        return rugbyApiService.getRugbyCountries(request);
+    }
     
 }
