@@ -90,8 +90,8 @@ public class BasketballApiService {
                         // Crear objeto DataModel con los datos de la solicitud POST
                         Product product = new Product();
                         product.setUserId(decodedTokenInfo);
-                        product.setApiUrl("https://v1.basketball.api-sports.io/");
-                        product.setPath("v1");
+                        product.setApiUrl("https://v1.basketball.api-sports.io/leagues");
+                        product.setPath("basketball");
                         product.setStatus(false);
                         product.setDate(Date.from(Instant.now()));
                         product.setPaidDate(new Date(0));
@@ -107,7 +107,119 @@ public class BasketballApiService {
                                     System.out.println("Respuesta de la API externa: " + response);
 
                                     // Mostrar la información de la API por pantalla
-                                    System.out.println("Respuesta de la API de Rugby: " + responseBody);
+                                    System.out.println("Respuesta de la API de Basketball: " + responseBody);
+
+                                    // Retornar la respuesta de la API externa si es relevante
+                                    return Mono.just(ResponseEntity.ok()
+                                            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                                            .body(responseBody + "\n\n" + decodedTokenInfo));
+                                })
+                                .onErrorResume(e -> {
+                                    // Manejar el error según sea necesario
+                                    e.printStackTrace(); // Loguear el error
+                                    return Mono.empty();
+                                });
+                    });
+                })
+                .collectList()
+                .map(responseEntities -> responseEntities.isEmpty() ? "Sin datos" : responseEntities.get(0));
+    }
+
+    public Mono<Object> getBasketballSeasons(HttpServletRequest request) {
+        WebClient externalWebClient = WebClient.create("http://localhost:8082/api/products");
+        return basketballWebClient.get()
+                .uri("/seasons")
+                .header("x-apisports-key", basketballApiSportsKey)
+                .retrieve()
+                .bodyToFlux(DataBuffer.class)
+                .map(dataBuffer -> {
+                    byte[] bytes = new byte[dataBuffer.readableByteCount()];
+                    dataBuffer.read(bytes);
+                    DataBufferUtils.release(dataBuffer);
+                    // Decodificar el token JWT y obtener información
+                    Mono<String> decodedTokenInfoMono = getJwtId(request);
+
+                    // Utilizar flatMap para combinar la información del token con la respuesta
+                    return decodedTokenInfoMono.flatMap(decodedTokenInfo -> {
+                        String responseBody = new String(bytes, StandardCharsets.UTF_8);
+
+                        // Crear objeto DataModel con los datos de la solicitud POST
+                        Product product = new Product();
+                        product.setUserId(decodedTokenInfo);
+                        product.setApiUrl("https://v1.basketball.api-sports.io/seasons");
+                        product.setPath("basketball");
+                        product.setStatus(false);
+                        product.setDate(Date.from(Instant.now()));
+                        product.setPaidDate(new Date(0));
+
+                        // Realizar la solicitud POST a la API externa utilizando WebClient
+                        return externalWebClient.post()
+                                .uri("/insert")
+                                .body(BodyInserters.fromValue(product))
+                                .retrieve()
+                                .bodyToMono(Product.class)
+                                .flatMap(response -> {
+                                    // Loguear la respuesta de la API externa si es necesario
+                                    System.out.println("Respuesta de la API externa: " + response);
+
+                                    // Mostrar la información de la API por pantalla
+                                    System.out.println("Respuesta de la API de Basketball: " + responseBody);
+
+                                    // Retornar la respuesta de la API externa si es relevante
+                                    return Mono.just(ResponseEntity.ok()
+                                            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                                            .body(responseBody + "\n\n" + decodedTokenInfo));
+                                })
+                                .onErrorResume(e -> {
+                                    // Manejar el error según sea necesario
+                                    e.printStackTrace(); // Loguear el error
+                                    return Mono.empty();
+                                });
+                    });
+                })
+                .collectList()
+                .map(responseEntities -> responseEntities.isEmpty() ? "Sin datos" : responseEntities.get(0));
+    }
+
+    public Mono<Object> getBasketballCountries(HttpServletRequest request) {
+        WebClient externalWebClient = WebClient.create("http://localhost:8082/api/products");
+        return basketballWebClient.get()
+                .uri("/countries")
+                .header("x-apisports-key", basketballApiSportsKey)
+                .retrieve()
+                .bodyToFlux(DataBuffer.class)
+                .map(dataBuffer -> {
+                    byte[] bytes = new byte[dataBuffer.readableByteCount()];
+                    dataBuffer.read(bytes);
+                    DataBufferUtils.release(dataBuffer);
+                    // Decodificar el token JWT y obtener información
+                    Mono<String> decodedTokenInfoMono = getJwtId(request);
+
+                    // Utilizar flatMap para combinar la información del token con la respuesta
+                    return decodedTokenInfoMono.flatMap(decodedTokenInfo -> {
+                        String responseBody = new String(bytes, StandardCharsets.UTF_8);
+
+                        // Crear objeto DataModel con los datos de la solicitud POST
+                        Product product = new Product();
+                        product.setUserId(decodedTokenInfo);
+                        product.setApiUrl("https://v1.basketball.api-sports.io/countries");
+                        product.setPath("basketball");
+                        product.setStatus(false);
+                        product.setDate(Date.from(Instant.now()));
+                        product.setPaidDate(new Date(0));
+
+                        // Realizar la solicitud POST a la API externa utilizando WebClient
+                        return externalWebClient.post()
+                                .uri("/insert")
+                                .body(BodyInserters.fromValue(product))
+                                .retrieve()
+                                .bodyToMono(Product.class)
+                                .flatMap(response -> {
+                                    // Loguear la respuesta de la API externa si es necesario
+                                    System.out.println("Respuesta de la API externa: " + response);
+
+                                    // Mostrar la información de la API por pantalla
+                                    System.out.println("Respuesta de la API de Basketball: " + responseBody);
 
                                     // Retornar la respuesta de la API externa si es relevante
                                     return Mono.just(ResponseEntity.ok()

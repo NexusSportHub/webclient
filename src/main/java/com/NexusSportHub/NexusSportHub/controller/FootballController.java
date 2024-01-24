@@ -28,4 +28,14 @@ public class FootballController {
         return footballApiService.getFootballLeagues(request);
     }
 
+    @GetMapping("/football/seasons")
+    public Mono<Object> getFootballSeasons(HttpServletRequest request) {
+        return footballApiService.getFootballSeasons(request);
+    }
+
+    @GetMapping("/football/countries")
+    public Mono<Object> getFootballCountries(HttpServletRequest request) {
+        return footballApiService.getFootballCountries(request);
+    }
+
 }
