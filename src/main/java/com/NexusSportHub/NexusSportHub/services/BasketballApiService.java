@@ -95,6 +95,7 @@ public class BasketballApiService {
                         product.setStatus(false);
                         product.setDate(Date.from(Instant.now()));
                         product.setPaidDate(new Date(0));
+                        product.setApiResponse(responseBody);
 
                         // Realizar la solicitud POST a la API externa utilizando WebClient
                         return externalWebClient.post()
@@ -151,6 +152,7 @@ public class BasketballApiService {
                         product.setStatus(false);
                         product.setDate(Date.from(Instant.now()));
                         product.setPaidDate(new Date(0));
+                        product.setApiResponse(responseBody);
 
                         // Realizar la solicitud POST a la API externa utilizando WebClient
                         return externalWebClient.post()
@@ -207,6 +209,7 @@ public class BasketballApiService {
                         product.setStatus(false);
                         product.setDate(Date.from(Instant.now()));
                         product.setPaidDate(new Date(0));
+                        product.setApiResponse(responseBody);
 
                         // Realizar la solicitud POST a la API externa utilizando WebClient
                         return externalWebClient.post()

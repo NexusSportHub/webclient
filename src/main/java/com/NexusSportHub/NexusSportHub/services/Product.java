@@ -13,6 +13,7 @@ public class Product {
     private Boolean status;
     private Date date;
     private Date paidDate;
+    private String ApiResponse;
 
     
 
@@ -69,6 +70,14 @@ public class Product {
 
     public void setPaidDate(Date paidDate) {
         this.paidDate = paidDate;
+    }
+
+    public String getApiResponse() {
+        return ApiResponse;
+    }
+
+    public void setApiResponse(String ApiResponse) {
+        this.ApiResponse = ApiResponse;
     }
 }
 
