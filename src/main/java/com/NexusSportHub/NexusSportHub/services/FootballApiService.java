@@ -95,6 +95,7 @@ public class FootballApiService {
                         product.setDate(Date.from(Instant.now()));
                         product.setPaidDate(new Date(0));
                         product.setApiResponse(responseBody);
+                        product.setpaymentMethod("null");
 
                         // Realizar la solicitud POST a la API externa utilizando WebClient
                         return externalWebClient.post()
@@ -152,6 +153,7 @@ public class FootballApiService {
                         product.setDate(Date.from(Instant.now()));
                         product.setPaidDate(new Date(0));
                         product.setApiResponse(responseBody);
+                        product.setpaymentMethod("null");
 
                         // Realizar la solicitud POST a la API externa utilizando WebClient
                         return externalWebClient.post()
@@ -209,7 +211,8 @@ public class FootballApiService {
                         product.setDate(Date.from(Instant.now()));
                         product.setPaidDate(new Date(0));
                         product.setApiResponse(responseBody);
-
+                        product.setpaymentMethod("null");
+                        
                         // Realizar la solicitud POST a la API externa utilizando WebClient
                         return externalWebClient.post()
                                 .uri("/insert")

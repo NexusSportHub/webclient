@@ -14,6 +14,7 @@ public class Product {
     private Date date;
     private Date paidDate;
     private String ApiResponse;
+    private String paymentMethod;
 
     
 
@@ -78,6 +79,14 @@ public class Product {
 
     public void setApiResponse(String ApiResponse) {
         this.ApiResponse = ApiResponse;
+    }
+
+    public String getpaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setpaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
     }
 }
 
