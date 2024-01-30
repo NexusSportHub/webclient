@@ -37,31 +37,13 @@ public class BasketballApiService {
                 .build();
     }
 
-    // Decodificamos el token JWT del proyecto react
     public Mono<String> getJwtId(HttpServletRequest request) {
         String token = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if (token != null && token.startsWith("Bearer ")) {
-            token = token.substring(7);
-
-            Base64.Decoder decoder = Base64.getDecoder();
-            String[] array = token.split("\\.");
-
-            if (array.length >= 2) {
-                String decodedJson = new String(decoder.decode(array[1]), StandardCharsets.UTF_8);
-                try {
-                    // Parsear el JSON y extraer el campo "sub" (ID)
-                    JsonNode jsonNode = new ObjectMapper().readTree(decodedJson);
-                    String jwtId = jsonNode.get("sub").asText();
-                    return Mono.just(jwtId);
-                } catch (IOException e) {
-                    return Mono.error(new RuntimeException("Error al parsear el token JWT"));
-                }
-            } else {
-                return Mono.error(new RuntimeException("Token JWT no tiene el formato esperado"));
-            }
-        } else {
-            return Mono.error(new RuntimeException("No se encontró el token en el encabezado"));
+        try {
+            return Mono.just(JwtTokenDecoder.decodeJwtId(token));
+        } catch (RuntimeException e) {
+            return Mono.error(e);
         }
     }
 
