@@ -19,18 +19,25 @@ import reactor.core.publisher.Mono;
 @Service
 public class BasketballApiService {
 
+    // creamos nuevo webclient para poder usarlo en los métodos
     private final WebClient basketballWebClient;
 
+    // pasamos la key definida en el archivo application.properties
     @Value("${basketball.api-sports.key}")
     private String basketballApiSportsKey;
 
     public BasketballApiService(WebClient.Builder webClientBuilder) {
+        // configuramos la cabecera necesaria de la api para poder acceder a la
+        // información
         this.basketballWebClient = webClientBuilder
                 .baseUrl("https://v1.basketball.api-sports.io/")
                 .defaultHeader("x-apisports-key", basketballApiSportsKey)
                 .build();
     }
 
+    // Hacemos un método que recibe el token decodificado del archivo JwtTokenDecode
+    // para poder pasarlo
+    // en la cabecera de cada request realizada por el usuario
     public Mono<String> getJwtId(HttpServletRequest request) {
         String token = request.getHeader(HttpHeaders.AUTHORIZATION);
 
@@ -46,7 +53,12 @@ public class BasketballApiService {
     // se hace la línea de map, pasa el tipo de dato a uno más pequeño
     // para así poder mostrarlo por pantalla
     public Mono<Object> getBasketballLeagues(HttpServletRequest request) {
+        // creamos un nuevo webclient con la url del proyecto externo conectado a la
+        // mongo
         WebClient externalWebClient = WebClient.create("http://localhost:8082/api/products");
+        // hacemos un método get para poder acceder a la información de la api
+        // lo configuramos para mostrar por pantalla y enviar los datos a la mongo
+        // mediante el método post
         return basketballWebClient.get()
                 .uri("/leagues")
                 .header("x-apisports-key", basketballApiSportsKey)
@@ -104,7 +116,12 @@ public class BasketballApiService {
     }
 
     public Mono<Object> getBasketballSeasons(HttpServletRequest request) {
+        // creamos un nuevo webclient con la url del proyecto externo conectado a la
+        // mongo
         WebClient externalWebClient = WebClient.create("http://localhost:8082/api/products");
+        // hacemos un método get para poder acceder a la información de la api
+        // lo configuramos para mostrar por pantalla y enviar los datos a la mongo
+        // mediante el método post
         return basketballWebClient.get()
                 .uri("/seasons")
                 .header("x-apisports-key", basketballApiSportsKey)
@@ -162,7 +179,12 @@ public class BasketballApiService {
     }
 
     public Mono<Object> getBasketballCountries(HttpServletRequest request) {
+        // creamos un nuevo webclient con la url del proyecto externo conectado a la
+        // mongo
         WebClient externalWebClient = WebClient.create("http://localhost:8082/api/products");
+        // hacemos un método get para poder acceder a la información de la api
+        // lo configuramos para mostrar por pantalla y enviar los datos a la mongo
+        // mediante el método post
         return basketballWebClient.get()
                 .uri("/countries")
                 .header("x-apisports-key", basketballApiSportsKey)
@@ -219,6 +241,4 @@ public class BasketballApiService {
                 .map(responseEntities -> responseEntities.isEmpty() ? "Sin datos" : responseEntities.get(0));
     }
 
-
-    
 }
