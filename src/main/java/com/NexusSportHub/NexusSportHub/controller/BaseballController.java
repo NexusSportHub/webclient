@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.NexusSportHub.NexusSportHub.services.BaseballApiService;
-import com.NexusSportHub.NexusSportHub.services.FootballApiService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import reactor.core.publisher.Mono;
