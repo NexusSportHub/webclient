@@ -8,19 +8,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import jakarta.servlet.http.HttpServletRequest;
 import reactor.core.publisher.Mono;
 import org.springframework.core.io.buffer.DataBuffer;
-
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.sql.Date;
-import java.util.Base64;
-
 import java.time.Instant;
 
 @Service
