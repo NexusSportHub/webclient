@@ -1,12 +1,12 @@
 package com.NexusSportHub.NexusSportHub.services;
 
-
-
-    import java.util.Date;
+import java.util.Date;
 
 public class Product {
 
-   
+    // Creamos las variables que vamos a usar para almacenar los datos y enviarlo a
+    // la mongo, es importante que tengan el mismo nombre y el mismo tipo de dato
+    // que los definidos en el proyecto externo
     private String userId;
     private String apiUrl;
     private String path;
@@ -16,11 +16,9 @@ public class Product {
     private String ApiResponse;
     private String paymentMethod;
 
-    
+    // Constructor vacío
+    public Product() {
 
-     // Constructor
-     public Product() {
-       
     }
 
     // Getters y Setters
@@ -89,6 +87,3 @@ public class Product {
         this.paymentMethod = paymentMethod;
     }
 }
-
-
-

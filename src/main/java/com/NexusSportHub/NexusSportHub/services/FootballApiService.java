@@ -18,13 +18,17 @@ import java.time.Instant;
 @Service
 public class FootballApiService {
 
+    // creamos nuevo webclient para poder usarlo en los métodos
     private final WebClient footballWebClient;
 
+    // pasamos la key definida en el archivo application.properties
     @Value("${football.api-sports.key}")
     private String footballApiSportsKey;
 
     public FootballApiService(WebClient.Builder webClientBuilder) {
 
+        // configuramos la cabecera necesaria de la api para poder acceder a la
+        // información
         this.footballWebClient = webClientBuilder
                 .baseUrl("https://v3.football.api-sports.io/")
                 .defaultHeader("x-apisports-key", footballApiSportsKey)
@@ -32,6 +36,9 @@ public class FootballApiService {
 
     }
 
+    // Hacemos un método que recibe el token decodificado del archivo JwtTokenDecode
+    // para poder pasarlo
+    // en la cabecera de cada request realizada por el usuario
     public Mono<String> getJwtId(HttpServletRequest request) {
         String token = request.getHeader(HttpHeaders.AUTHORIZATION);
 
@@ -43,7 +50,12 @@ public class FootballApiService {
     }
 
     public Mono<Object> getFootballLeagues(HttpServletRequest request) {
+        // creamos un nuevo webclient con la url del proyecto externo conectado a la
+        // mongo
         WebClient externalWebClient = WebClient.create("http://localhost:8082/api/products");
+        // hacemos un método get para poder acceder a la información de la api
+        // lo configuramos para mostrar por pantalla y enviar los datos a la mongo
+        // mediante el método post
         return footballWebClient.get()
                 .uri("/leagues")
                 .header("x-apisports-key", footballApiSportsKey)
@@ -101,7 +113,12 @@ public class FootballApiService {
     }
 
     public Mono<Object> getFootballSeasons(HttpServletRequest request) {
+        // creamos un nuevo webclient con la url del proyecto externo conectado a la
+        // mongo
         WebClient externalWebClient = WebClient.create("http://localhost:8082/api/products");
+        // hacemos un método get para poder acceder a la información de la api
+        // lo configuramos para mostrar por pantalla y enviar los datos a la mongo
+        // mediante el método post
         return footballWebClient.get()
                 .uri("/seasons")
                 .header("x-apisports-key", footballApiSportsKey)
@@ -159,7 +176,12 @@ public class FootballApiService {
     }
 
     public Mono<Object> getFootballCountries(HttpServletRequest request) {
+        // creamos un nuevo webclient con la url del proyecto externo conectado a la
+        // mongo
         WebClient externalWebClient = WebClient.create("http://localhost:8082/api/products");
+        // hacemos un método get para poder acceder a la información de la api
+        // lo configuramos para mostrar por pantalla y enviar los datos a la mongo
+        // mediante el método post
         return footballWebClient.get()
                 .uri("/countries")
                 .header("x-apisports-key", footballApiSportsKey)
@@ -186,7 +208,7 @@ public class FootballApiService {
                         product.setPaidDate(new Date(0));
                         product.setApiResponse(responseBody);
                         product.setpaymentMethod("null");
-                        
+
                         // Realizar la solicitud POST a la API externa utilizando WebClient
                         return externalWebClient.post()
                                 .uri("/insert")

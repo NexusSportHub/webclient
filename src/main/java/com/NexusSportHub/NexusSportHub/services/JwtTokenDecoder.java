@@ -8,6 +8,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class JwtTokenDecoder {
 
+    // Recibimos el token del proyecto react y lo decodificamos para obtener el id,
+    // que es lo unico que nos interesa para enviarlo a la mongo
     public static String decodeJwtId(String token) {
         if (token != null && token.startsWith("Bearer ")) {
             token = token.substring(7);
