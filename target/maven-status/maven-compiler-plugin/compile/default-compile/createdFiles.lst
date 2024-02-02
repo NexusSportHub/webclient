@@ -1,1 +1,12 @@
+com\NexusSportHub\NexusSportHub\controller\RugbyController.class
 com\NexusSportHub\NexusSportHub\NexusSportHubApplication.class
+com\NexusSportHub\NexusSportHub\services\Product.class
+com\NexusSportHub\NexusSportHub\services\RugbyApiService.class
+com\NexusSportHub\NexusSportHub\services\WebClientConfig.class
+com\NexusSportHub\NexusSportHub\controller\FootballController.class
+com\NexusSportHub\NexusSportHub\services\FootballApiService.class
+com\NexusSportHub\NexusSportHub\services\JwtTokenDecoder.class
+com\NexusSportHub\NexusSportHub\controller\BaseballController.class
+com\NexusSportHub\NexusSportHub\services\BaseballApiService.class
+com\NexusSportHub\NexusSportHub\services\BasketballApiService.class
+com\NexusSportHub\NexusSportHub\controller\BasketballController.class
