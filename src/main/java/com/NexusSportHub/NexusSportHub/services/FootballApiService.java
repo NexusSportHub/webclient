@@ -120,7 +120,7 @@ public class FootballApiService {
         // lo configuramos para mostrar por pantalla y enviar los datos a la mongo
         // mediante el método post
         return footballWebClient.get()
-                .uri("/seasons")
+                .uri("leagues/seasons")
                 .header("x-apisports-key", footballApiSportsKey)
                 .retrieve()
                 .bodyToFlux(DataBuffer.class)
@@ -138,7 +138,7 @@ public class FootballApiService {
                         // Crear objeto DataModel con los datos de la solicitud POST
                         Product product = new Product();
                         product.setUserId(decodedTokenInfo);
-                        product.setApiUrl("https://v3.football.api-sports.io/seasons");
+                        product.setApiUrl("https://v3.football.api-sports.io/leagues/seasons");
                         product.setPath("football");
                         product.setStatus(false);
                         product.setDate(Date.from(Instant.now()));
