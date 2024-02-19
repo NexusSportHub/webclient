@@ -25,17 +25,17 @@ public class FootballController {
 
     @GetMapping("/football/leagues")
     public Mono<Object> getFootballLeagues(HttpServletRequest request) {
-        return footballApiService.getFootballLeagues(request);
+        return footballApiService.getLeagues(request);
     }
 
     @GetMapping("/football/seasons")
     public Mono<Object> getFootballSeasons(HttpServletRequest request) {
-        return footballApiService.getFootballSeasons(request);
+        return footballApiService.getSeasons(request);
     }
 
     @GetMapping("/football/countries")
     public Mono<Object> getFootballCountries(HttpServletRequest request) {
-        return footballApiService.getFootballCountries(request);
+        return footballApiService.getCountries(request);
     }
 
 }
