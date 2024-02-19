@@ -42,7 +42,7 @@ public abstract class ApiService {
                 .defaultHeader("x-apisports-key", apiKey)
                 .build();
         this.apiUrl = apiUrl;
-        this.apiPath = apiUrl.substring(apiUrl.lastIndexOf('/') + 1); // Extracting path from URL
+        this.apiPath = extractApiPath(apiUrl); // Utilizar método para extraer el tipo de deporte
     }
 
     public Mono<String> getJwtId(HttpServletRequest request) {
@@ -81,9 +81,9 @@ public abstract class ApiService {
                         product.setPath(apiPath);
                         product.setStatus(false);
                         product.setDate(Date.from(Instant.now()));
-                        product.setPaidDate(new Date(0));
+                        product.setPaidDate(null);
                         product.setApiResponse(responseBody);
-                        product.setpaymentMethod("null");
+                        product.setpaymentMethod(null);
                         return externalWebClient.post()
                                 .uri("/insert")
                                 .body(BodyInserters.fromValue(product))
@@ -115,9 +115,20 @@ public abstract class ApiService {
             return rugbyApiSportsKey;
         } else {
             return baseballApiSportsKey;
-            
+
+        }
+    }
+
+    // Método para extraer el tipo de deporte de la URL
+    private String extractApiPath(String apiUrl) {
+        if (apiUrl.contains("basketball")) {
+            return "basketball";
+        } else if (apiUrl.contains("football")) {
+            return "football";
+        } else if (apiUrl.contains("rugby")) {
+            return "rugby";
+        } else {
+            return "baseball";
         }
     }
 }
-
-
