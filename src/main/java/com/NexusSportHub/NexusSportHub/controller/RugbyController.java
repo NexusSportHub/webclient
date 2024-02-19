@@ -26,17 +26,17 @@ public class RugbyController {
 
     @GetMapping("rugby/leagues")
     public Mono<Object> getrugbyleagues(HttpServletRequest request) {
-        return rugbyApiService.getRugbyLeagues(request);
+        return rugbyApiService.getLeagues(request);
     }
 
     @GetMapping("rugby/seasons")
     public Mono<Object> getrugbyseasons(HttpServletRequest request) {
-        return rugbyApiService.getRugbySeasons(request);
+        return rugbyApiService.getSeasons(request);
     }
 
     @GetMapping("rugby/countries")
     public Mono<Object> getrugbycountries(HttpServletRequest request) {
-        return rugbyApiService.getRugbyCountries(request);
+        return rugbyApiService.getCountries(request);
     }
     
 }

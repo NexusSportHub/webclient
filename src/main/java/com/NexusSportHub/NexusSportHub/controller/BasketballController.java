@@ -28,17 +28,17 @@ public class BasketballController {
 
     @GetMapping("/basketball/leagues")
     public Mono<Object> getBasketballLeagues(HttpServletRequest request) {
-        return basketballApiService.getBasketballLeagues(request);
+        return basketballApiService.getLeagues(request);
     }
 
     @GetMapping("/basketball/seasons")
     public Mono<Object> getBasketballSeasons(HttpServletRequest request) {
-        return basketballApiService.getBasketballSeasons(request);
+        return basketballApiService.getSeasons(request);
     }
 
     @GetMapping("/basketball/countries")
     public Mono<Object> getBasketballCountries(HttpServletRequest request) {
-        return basketballApiService.getBasketballCountries(request);
+        return basketballApiService.getCountries(request);
     }
     
 }
