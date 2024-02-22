@@ -12,7 +12,7 @@ import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "http://localhost:5173") // Permitimos el acceso al puerto donde se ejecuta el proyecto react
+@CrossOrigin(origins = "${virtual.machine.ip}:${react.port}") // Utiliza la variable de entorno para la IP
 public class FootballController {
 
     private final FootballApiService footballApiService;
