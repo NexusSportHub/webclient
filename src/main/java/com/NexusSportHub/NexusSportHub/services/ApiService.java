@@ -36,6 +36,10 @@ public abstract class ApiService {
     @Value("${rugby.api-sports.key}")
     private String rugbyApiSportsKey;
 
+    @Value("${virtual.machine.ip}")
+    private String virtualMachineIp; // Nueva variable de entorno para la IP de la máquina virtual
+
+
     public ApiService(WebClient.Builder webClientBuilder, String apiUrl, String apiKey) {
         this.webClient = webClientBuilder
                 .baseUrl(apiUrl)
@@ -62,7 +66,7 @@ public abstract class ApiService {
     public abstract Mono<Object> getCountries(HttpServletRequest request);
 
     protected Mono<Object> fetchData(HttpServletRequest request, String endpoint) {
-        WebClient externalWebClient = WebClient.create("http://localhost:8082/api/products");
+         WebClient externalWebClient = WebClient.create("http://" + virtualMachineIp + ":8082/api/products"); // Utilizar la variable de entorno para la IP
         return webClient.get()
                 .uri(endpoint)
                 .header("x-apisports-key", getApiKey())
